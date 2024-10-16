@@ -14,6 +14,7 @@ PREFIX = 'TIE-rp'
 
 EXAMPLE_FILE_PATH = '.env-example'
 S3_FILE_PATH = 'TIE-rp/'
+EXAMPLE_REGEX = '^[a-zA-Z]+$'
 
 
 if __name__ == '__main__':
@@ -29,3 +30,5 @@ if __name__ == '__main__':
             local_file_path=EXAMPLE_FILE_PATH,
             s3_file_path=S3_FILE_PATH,
         )
+        aws_manager.list_files(regex_pattern=EXAMPLE_REGEX)
+

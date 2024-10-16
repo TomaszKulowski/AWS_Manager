@@ -1,4 +1,5 @@
 import os
+import re
 
 import boto3
 
@@ -71,22 +72,33 @@ class AWSManager:
         )
         self.client = session.client('s3')
 
-    def list_files(self):
+    def list_files(self, regex_pattern=None):
         """
         Lists the files in the specified S3 bucket with the optional prefix.
 
         If files are found, their keys are printed. If no files are found,
         a message is printed indicating that no files were found.
 
+        Args:
+            regex_pattern (str, optional): A regular expression pattern to filter the file keys.
+                If provided, only keys matching this pattern will be listed.
+
         Raises:
             ClientError: If an error occurs while accessing the S3 service.
         """
+        if regex_pattern:
+            pattern = re.compile(regex_pattern)
+
         try:
             response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=self.prefix)
 
             if 'Contents' in response:
                 for content in response['Contents']:
-                    print(content['Key'])
+                    if regex_pattern:
+                        if pattern.search(content['Key']):
+                            print(content['Key'])
+                    else:
+                        print(content['Key'])
 
             else:
                 print(f'No files found in the bucket "{self.bucket_name}" with prefix: "{self.prefix}".')
