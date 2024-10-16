@@ -12,6 +12,9 @@ ACCESS_KEY = getenv('ACCESS_KEY')
 BUCKET_NAME = 'developer-task'
 PREFIX = 'TIE-rp'
 
+EXAMPLE_FILE_PATH = '.env-example'
+S3_FILE_PATH = 'TIE-rp/'
+
 
 if __name__ == '__main__':
     with AWSManager(
@@ -22,3 +25,7 @@ if __name__ == '__main__':
         region='eu-central-1',
     ) as aws_manager:
         aws_manager.list_files()
+        aws_manager.upload_file(
+            local_file_path=EXAMPLE_FILE_PATH,
+            s3_file_path=S3_FILE_PATH,
+        )

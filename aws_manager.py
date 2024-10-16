@@ -1,5 +1,8 @@
+import os
+
 import boto3
 
+from boto3.exceptions import S3UploadFailedError
 from botocore.exceptions import ClientError
 
 
@@ -90,3 +93,23 @@ class AWSManager:
 
         except ClientError as error:
             print(error)
+
+    def upload_file(self, local_file_path: str, s3_file_path: str):
+        """
+        Uploads a local file to an S3 bucket.
+
+        Args:
+            local_file_path (str): The file path of the local file to be uploaded.
+            s3_file_path (str): The destination path in the S3 bucket where the file will be uploaded.
+
+        Raises:
+            S3UploadFailedError: If the file upload fails for any reason, an error message is printed.
+        """
+        file_name = os.path.basename(local_file_path)
+
+        try:
+            self.client.upload_file(local_file_path, self.bucket_name, s3_file_path)
+            print(f'Uploaded "{file_name}" to "{s3_file_path}" in bucket "{self.bucket_name}".')
+
+        except S3UploadFailedError as error:
+            print(f'Error uploading file: {error}')
