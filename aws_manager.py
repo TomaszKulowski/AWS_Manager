@@ -125,3 +125,38 @@ class AWSManager:
 
         except S3UploadFailedError as error:
             print(f'Error uploading file: {error}')
+
+    def delete_files(self, regex_pattern: str):
+        """
+        Deletes files in the specified S3 bucket that match a given regex pattern.
+
+        Args:
+            regex_pattern (str): A regular expression pattern to filter the file keys.
+                 Only files with keys matching this pattern will be deleted.
+
+        Raises:
+            ClientError: If an error occurs while accessing the S3 service or deleting files
+        """
+        pattern = re.compile(regex_pattern)
+
+        try:
+            response = self.client.list_objects_v2(Bucket=self.bucket_name, Prefix=self.prefix)
+
+            if 'Contents' in response:
+                keys_to_delete = [content['Key'] for content in response['Contents'] if pattern.search(content['Key'])]
+
+                if keys_to_delete:
+                    self.client.delete_objects(
+                        Bucket=self.bucket_name,
+                        Delete={'Objects': [{'Key': key} for key in keys_to_delete]},
+                    )
+                    print(f'Deleted files: {keys_to_delete}')
+
+                else:
+                    print('No files matched the deletion pattern.')
+
+            else:
+                print(f'No files found in the bucket "{self.bucket_name}" with prefix: "{self.prefix}".')
+
+        except ClientError as error:
+            print(error)

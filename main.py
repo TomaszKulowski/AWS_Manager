@@ -31,4 +31,4 @@ if __name__ == '__main__':
             s3_file_path=S3_FILE_PATH,
         )
         aws_manager.list_files(regex_pattern=EXAMPLE_REGEX)
-
+        aws_manager.delete_files(regex_pattern=EXAMPLE_REGEX)
